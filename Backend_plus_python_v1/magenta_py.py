@@ -1,28 +1,38 @@
+from flask import Flask, jsonify
 import magenta.music as mm
+from magenta.models.performance_rnn import performance_sequence_generator
 from magenta.models.shared import sequence_generator_bundle
-from magenta.music.protobuf import generator_pb2
-from magenta.music.protobuf import music_pb2
 import tensorflow.compat.v1 as tf
-import json
 
-tf.disable_v2_behavior()
+app = Flask(__name__)
 
-bundle = sequence_generator_bundle.read_bundle_file('basic_rnn.mag')
-generator_map = mm.sequence_generator.get_generator_map()
-generator = generator_map['basic_rnn'](checkpoint=None, bundle=bundle)
+# Load the Magenta model
+BUNDLE_FILE = "performance_rnn.mag"  # Ensure you have the correct model file
+bundle = sequence_generator_bundle.read_bundle_file(BUNDLE_FILE)
+generator = performance_sequence_generator.PerformanceRnnSequenceGenerator(bundle)
 generator.initialize()
 
-def generate_notes():
-    primer_sequence = music_pb2.NoteSequence()
-    primer_sequence.tempos.add(qpm=120)
-    generator_options = generator_pb2.GeneratorOptions()
-    generator_options.generate_sections.add(start_time=0, end_time=10)
-    sequence = generator.generate(primer_sequence, generator_options)
-    notes = [(note.pitch, note.start_time, note.end_time) for note in sequence.notes]
-    return notes
+@app.route('/generate-music', methods=['GET'])
+def generate_music():
+    """Generates a sequence of notes and returns them as JSON."""
+    qpm = 120  # Tempo
+    primer = mm.NoteSequence()
+    
+    # Generate a 4-bar phrase
+    generator_options = generator.default_generate_options()
+    generator_options.args['temperature'].float_value = 1.0  # Randomness
+
+    generated_sequence = generator.generate(primer, generator_options)
+    
+    notes = []
+    for note in generated_sequence.notes:
+        notes.append({
+            "note": f"{mm.note_number_to_note_name(note.pitch)}{(note.pitch // 12) - 1}",
+            "start_time": note.start_time,
+            "end_time": note.end_time
+        })
+
+    return jsonify({"notes": notes})
 
 if __name__ == '__main__':
-    generated_notes = generate_notes()
-    with open("generated_notes.json", "w") as f:
-        json.dump(generated_notes, f)
-    print("Generated notes saved to generated_notes.json")
+    app.run(debug=True, port=5000)

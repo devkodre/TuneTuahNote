@@ -145,13 +145,31 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Audio started!");
     });
     
-    document.getElementById("generate").addEventListener("click", async () => {
-        const response = await fetch("generated_notes.json");
-        const notes = await response.json();
-        notes.forEach(({ 0: pitch, 1: start, 2: end }) => {
-            setTimeout(() => {
-                synth.triggerAttackRelease(Tone.Frequency(pitch, "midi").toNote(), end - start);
-            }, start * 1000);
-        });
+    // document.getElementById("generate").addEventListener("click", async () => {
+    //     const response = await fetch("generated_notes.json");
+    //     const notes = await response.json();
+    //     notes.forEach(({ 0: pitch, 1: start, 2: end }) => {
+    //         setTimeout(() => {
+    //             synth.triggerAttackRelease(Tone.Frequency(pitch, "midi").toNote(), end - start);
+    //         }, start * 1000);
+    //     });
+    // });
+    document.getElementById("generate-music").addEventListener("click", async () => {
+        try {
+            const response = await fetch("http://127.0.0.1:5000/generate-music");
+            const data = await response.json();
+            console.log("Generated Notes:", data.notes);
+    
+            data.notes.forEach(note => {
+                const duration = note.end_time - note.start_time;
+                setTimeout(() => {
+                    synth.triggerAttackRelease(note.note, `${duration}s`);
+                }, note.start_time * 1000);
+            });
+    
+        } catch (error) {
+            console.error("Error fetching generated music:", error);
+        }
     });
+    
 });
