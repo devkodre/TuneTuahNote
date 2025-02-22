@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,5 +10,27 @@
 <body>
     <div class="piano" id="piano"></div>
     <script src="script.js"></script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playable Piano</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+</head>
+<body>
+    <button id="start-audio">Start Audio</button>
+    <button id="record">Record</button>
+    <button id="stop" disabled>Stop</button>
+    <button id="playback" disabled>Play Recording</button>
+
+    <div class="piano" id="piano"></div>
+
+    <!-- Place script at the end to ensure elements exist -->
+    <script src="script2.js"></script>
 </body>
 </html>
