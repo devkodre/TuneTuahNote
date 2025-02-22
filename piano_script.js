@@ -1,4 +1,4 @@
-// Define the piano keys with note names and their type (white/black)
+// Define the correct sequence of piano keys per octave
 const keys = [
     { note: "C", isBlack: false }, { note: "C#", isBlack: true }, { note: "D", isBlack: false }, { note: "D#", isBlack: true },
     { note: "E", isBlack: false }, { note: "F", isBlack: false }, { note: "F#", isBlack: true }, { note: "G", isBlack: false },
@@ -8,11 +8,12 @@ const keys = [
 // Object to store Howler.js sound instances
 const sounds = {};
 
-// Load sounds dynamically from your repository
+// Ensure the range starts at **C1** and ends at **C5**
 for (let octave = 1; octave <= 5; octave++) {
     keys.forEach(key => {
+        if (octave === 5 && key.note !== "C") return; // Limit C5 as the last note
         const note = `${key.note}${octave}`;
-        sounds[note] = new Howl({ src: [`sounds/${note}.mp3`] }); // Load from repo
+        sounds[note] = new Howl({ src: [`sounds/${note}.mp3`] }); // Load from repository
     });
 }
 
@@ -22,15 +23,17 @@ const piano = document.getElementById("piano");
 // Generate keys dynamically
 for (let octave = 1; octave <= 5; octave++) {
     keys.forEach(key => {
+        if (octave === 5 && key.note !== "C") return; // Ensure C5 is the only note in octave 5
+
         const keyElement = document.createElement("div");
         keyElement.classList.add("key");
         if (key.isBlack) keyElement.classList.add("black");
         keyElement.dataset.note = `${key.note}${octave}`;
         keyElement.innerText = key.note;
-        
+
         // Play sound on click
         keyElement.addEventListener("click", () => playSound(keyElement.dataset.note));
-        
+
         piano.appendChild(keyElement);
     });
 }
