@@ -35,6 +35,13 @@ button:hover {
     transform: scale(1.05);
 }
 
+button:disabled, .disabled {
+    background-color: grey;
+    color: white;
+    cursor: not-allowed;
+}
+
+
 .piano-container {
     display: flex;
     justify-content: center;

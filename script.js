@@ -1,11 +1,29 @@
 console.log("Script2.js is loading");
 
-document.getElementById("start-audio").addEventListener("click", async () => {
-    await Tone.start();
-    console.log("Audio started!");
-});
-
 document.addEventListener("DOMContentLoaded", () => {
+    const startAudioButton = document.getElementById("start-audio");
+    const recordButton = document.getElementById("record");
+    const stopButton = document.getElementById("stop");
+    const playbackButton = document.getElementById("playback");
+    
+    function updateButtonStyles() {
+        [recordButton, stopButton, playbackButton].forEach(button => {
+            button.classList.toggle("disabled", button.disabled);
+        });
+    }
+
+    recordButton.disabled = true;
+    stopButton.disabled = true;
+    playbackButton.disabled = true;
+    updateButtonStyles();
+
+    startAudioButton.addEventListener("click", async () => {
+        await Tone.start();
+        console.log("Audio started!");
+        recordButton.disabled = false;
+        updateButtonStyles();
+    });
+
     const synth = new Tone.Sampler({
         urls: {
             C1: "C1.mp3", "C#1": "C1s.mp3", D1: "D1.mp3", "D#1": "D1s.mp3",
@@ -57,10 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    const recordButton = document.getElementById("record");
-    const stopButton = document.getElementById("stop");
-    const playbackButton = document.getElementById("playback");
-
     recordButton.addEventListener("click", () => {
         recordedNotes = [];
         recording = true;
@@ -68,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         recordButton.disabled = true;
         stopButton.disabled = false;
         playbackButton.disabled = true;
+        updateButtonStyles();
         console.log("Recording started...");
     });
 
@@ -75,17 +90,86 @@ document.addEventListener("DOMContentLoaded", () => {
         recording = false;
         recordButton.disabled = false;
         stopButton.disabled = true;
-        playbackButton.disabled = recordedNotes.length === 0 ? true : false;
+        playbackButton.disabled = recordedNotes.length === 0;
+        updateButtonStyles();
         console.log("Recording stopped:", recordedNotes);
     });
 
     playbackButton.addEventListener("click", () => {
         console.log("Playing back recorded notes...");
+        console.log(recordedNotes);
+        Tone.Transport.stop();
+        Tone.Transport.cancel();
         recordedNotes.forEach(({ note, time }) => {
-            Tone.Transport.scheduleOnce(() => {
-                synth.triggerAttackRelease(note, "8n");
+            Tone.Transport.schedule((playTime) => {
+                synth.triggerAttackRelease(note, "8n", playTime);
             }, time);
         });
         Tone.Transport.start();
     });
 });
+
+
+//     const keys = [
+//         { note: "C", isBlack: false }, { note: "C#", isBlack: true }, { note: "D", isBlack: false }, { note: "D#", isBlack: true },
+//         { note: "E", isBlack: false }, { note: "F", isBlack: false }, { note: "F#", isBlack: true }, { note: "G", isBlack: false },
+//         { note: "G#", isBlack: true }, { note: "A", isBlack: false }, { note: "A#", isBlack: true }, { note: "B", isBlack: false }
+//     ];
+
+//     const piano = document.getElementById("piano");
+//     let recording = false;
+//     let recordedNotes = [];
+//     let startTime = 0;
+
+//     for (let octave = 1; octave <= 5; octave++) {
+//         keys.forEach(key => {
+//             const keyElement = document.createElement("div");
+//             keyElement.classList.add("key");
+//             if (key.isBlack) keyElement.classList.add("black");
+//             keyElement.dataset.note = `${key.note}${octave}`;
+//             keyElement.innerText = key.note;
+//             keyElement.addEventListener("click", () => playSound(keyElement.dataset.note));
+//             piano.appendChild(keyElement);
+//         });
+//     }
+
+//     function playSound(note) {
+//         synth.triggerAttackRelease(note, "8n");
+//         if (recording) {
+//             const time = Tone.now() - startTime;
+//             recordedNotes.push({ note, time });
+//         }
+//     }
+
+//     const recordButton = document.getElementById("record");
+//     const stopButton = document.getElementById("stop");
+//     const playbackButton = document.getElementById("playback");
+
+//     recordButton.addEventListener("click", () => {
+//         recordedNotes = [];
+//         recording = true;
+//         startTime = Tone.now();
+//         recordButton.disabled = true;
+//         stopButton.disabled = false;
+//         playbackButton.disabled = true;
+//         console.log("Recording started...");
+//     });
+
+//     stopButton.addEventListener("click", () => {
+//         recording = false;
+//         recordButton.disabled = false;
+//         stopButton.disabled = true;
+//         playbackButton.disabled = recordedNotes.length === 0 ? true : false;
+//         console.log("Recording stopped:", recordedNotes);
+//     });
+
+//     playbackButton.addEventListener("click", () => {
+//         console.log("Playing back recorded notes...");
+//         recordedNotes.forEach(({ note, time }) => {
+//             Tone.Transport.scheduleOnce(() => {
+//                 synth.triggerAttackRelease(note, "8n");
+//             }, time);
+//         });
+//         Tone.Transport.start();
+//     });
+// });
