@@ -39,7 +39,12 @@ body {
     text-align: center;
     margin: 0;
     padding: 20px;
+<<<<<<< Updated upstream
     background-color: #f0f0f0;
+=======
+    background: repeating-linear-gradient(#3a1c71, #d76d77, #ffaf7b);
+    color: white;
+>>>>>>> Stashed changes
 }
 
 button {
@@ -83,3 +88,57 @@ button {
     margin-right: -15px;
     z-index: 1;
 }
+<<<<<<< Updated upstream
+=======
+
+.key:active {
+    background-color: #ddd;
+}
+
+.key.black:active {
+    background-color: #444;
+}
+
+.key span {
+    position: absolute;
+    bottom: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: grey;
+}
+
+.key.white span {
+    bottom: 3px;
+}
+
+/* NAVIGATION BAR */
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+    background-color: #111;
+}
+
+.active {
+    background-color: #04AA6D;
+}
+>>>>>>> Stashed changes
