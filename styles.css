@@ -7,6 +7,16 @@ body {
     color: white;
 }
 
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
 button {
     padding: 12px 20px;
     margin: 10px;
@@ -40,7 +50,7 @@ button:hover {
     padding: 10px;
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    overflow-x: auto; /*Allows scrolling if too wide*/
+    overflow-x: auto;
     max-width: 90vw;
 }
 
@@ -78,4 +88,16 @@ button:hover {
 
 .key.black:active {
     background-color: #444;
+}
+
+.key span {
+    position: absolute;
+    bottom: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: grey;
+}
+
+.key.white span {
+    bottom: 3px;
 }
