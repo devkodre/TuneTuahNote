@@ -115,7 +115,35 @@ document.addEventListener("DOMContentLoaded", () => {
         generateButton.disabled = false;
     });
 
-    generateButton.addEventListener("click", () => {
+    generateButton.addEventListener("click", async () => {
         console.log("Generate");
+
+        console.log("Generating new melody...");
+        const response = await fetch('http://localhost:5000/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ notes: recordedNotes.map(note => note.note) })
+        });
+        const data = await response.json();
+        const generatedNotes = data.generated_notes;
+        console.log("Generated notes:", generatedNotes);
+    
+        // Concatenate the original recorded notes with the generated notes
+        const combinedNotes = recordedNotes.concat(generatedNotes.map((note, index) => ({
+            note,
+            time: recordedNotes.length > 0 ? recordedNotes[recordedNotes.length - 1].time + (index + 1) * 0.5 : (index + 1) * 0.5
+        })));
+    
+        // Play the combined notes
+        Tone.Transport.stop();
+        Tone.Transport.cancel();
+        combinedNotes.forEach(({ note, time }) => {
+            Tone.Transport.schedule((playTime) => {
+                synth.triggerAttackRelease(note, "8n", playTime);
+            }, time);
+        });
+        Tone.Transport.start();
     });
 });
