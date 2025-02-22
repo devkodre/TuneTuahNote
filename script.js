@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
             C5: "C5.mp3",
         },
         release: 1,
-        baseUrl: "/sounds2/",
+        baseUrl: "/sounds/",
     }).toDestination();
 
     const keys = [
