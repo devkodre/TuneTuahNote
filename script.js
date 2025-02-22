@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Generate");
 
         console.log("Generating new melody...");
-        const response = await fetch('http://localhost:5000/generate', {
+        const response = await fetch('http://localhost:5500/generate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
