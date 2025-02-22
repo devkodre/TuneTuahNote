@@ -51,10 +51,10 @@
 
 console.log("Script2.js is loading");
 
-// document.getElementById("start-audio").addEventListener("click", async () => {
-//     await Tone.start();
-//     console.log("Audio started!");
-// });
+document.getElementById("start-audio").addEventListener("click", async () => {
+    await Tone.start();
+    console.log("Audio started!");
+});
 
 document.addEventListener("DOMContentLoaded", () => {
     const synth = new Tone.Sampler({
