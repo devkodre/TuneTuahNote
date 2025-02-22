@@ -6,9 +6,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const stopButton = document.getElementById("stop");
     const playbackButton = document.getElementById("playback");
     const generateButton = document.getElementById("generate");
+    const downloadButton = document.getElementById("download");
     
     function updateButtonStyles() {
-        [recordButton, stopButton, playbackButton, generateButton].forEach(button => {
+        [recordButton, stopButton, playbackButton, generateButton, downloadButton].forEach(button => {
             button.classList.toggle("disabled", button.disabled);
         });
     }
@@ -85,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
         stopButton.disabled = false;
         playbackButton.disabled = true;
         generateButton.disabled = true;
+        downloadButton.disabled = true;
         updateButtonStyles();
         console.log("Recording started...");
     });
@@ -95,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         stopButton.disabled = true;
         playbackButton.disabled = recordedNotes.length === 0;
         generateButton.disabled = false;
+        downloadButton.disabled = false;
         updateButtonStyles();
         console.log("Recording stopped:", recordedNotes);
 
@@ -102,6 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     playbackButton.addEventListener("click", () => {
         generateButton.disabled = true;
+        downloadButton.disabled = true;
         console.log("Playing back recorded notes...");
         console.log(recordedNotes);
         Tone.Transport.stop();
@@ -113,9 +117,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         Tone.Transport.start();
         generateButton.disabled = false;
+        downloadButton.disabled = false;
     });
 
     generateButton.addEventListener("click", async () => {
+        recordButton.disabled = true;
+        stopButton.disabled = true;
+        playbackButton.disabled = true;
+        generateButton.disabled = true;
+        downloadButton.disabled = true;
+
         console.log("Generate");
 
         console.log("Generating new melody...");
@@ -145,5 +156,170 @@ document.addEventListener("DOMContentLoaded", () => {
             }, time);
         });
         Tone.Transport.start();
+
+        // if (combinedNotes.length > 0) {
+        //     downloadButton.disabled = false;
+        // }
+        recordButton.disabled = false;
+        playbackButton.disabled = false;
+        generateButton.disabled = false;
+        downloadButton.disabled = false;
     });
+
+    // async function downloadRecordedNotes() {
+    //     console.log("Starting download...");
+    //     const offlineContext = new Tone.OfflineContext(2, recordedNotes[recordedNotes.length - 1].time + 1, 44100); // Duration based on the last note's time
+    //     const offlineSynth = new Tone.Sampler({
+    //         urls: {
+    //             C1: "C1.mp3", "C#1": "C1s.mp3", D1: "D1.mp3", "D#1": "D1s.mp3",
+    //             E1: "E1.mp3", F1: "F1.mp3", "F#1": "F1s.mp3", G1: "G1.mp3",
+    //             "G#1": "G1s.mp3", A1: "A1.mp3", "A#1": "A1s.mp3", B1: "B1.mp3",
+    //             C2: "C2.mp3", "C#2": "C2s.mp3", D2: "D2.mp3", "D#2": "D2s.mp3",
+    //             E2: "E2.mp3", F2: "F2.mp3", "F#2": "F2s.mp3", G2: "G2.mp3",
+    //             "G#2": "G2s.mp3", A2: "A2.mp3", "A#2": "A2s.mp3", B2: "B2.mp3",
+    //             C3: "C3.mp3", "C#3": "C3s.mp3", D3: "D3.mp3", "D#3": "D3s.mp3",
+    //             E3: "E3.mp3", F3: "F3.mp3", "F#3": "F3s.mp3", G3: "G3.mp3",
+    //             "G#3": "G3s.mp3", A3: "A3.mp3", "A#3": "A3s.mp3", B3: "B3.mp3",
+    //             C4: "C4.mp3", "C#4": "C4s.mp3", D4: "D4.mp3", "D#4": "D4s.mp3",
+    //             E4: "E4.mp3", F4: "F4.mp3", "F#4": "F4s.mp3", G4: "G4.mp3",
+    //             "G#4": "G4s.mp3", A4: "A4.mp3", "A#4": "A4s.mp3", B4: "B4.mp3",
+    //             C5: "C5.mp3",
+    //         },
+    //         release: 1,
+    //         baseUrl: "/sounds/",
+    //     }).toDestination();
+    
+    //     recordedNotes.forEach(({ note, time }) => {
+    //         offlineSynth.triggerAttackRelease(note, "8n", time);
+    //     });
+    
+    //     const buffer = await offlineContext.render();
+    
+    //     const recorder = new Recorder(buffer);
+    //     recorder.record();
+    
+    //     // Stop recording after the duration of the recorded notes
+    //     setTimeout(() => {
+    //         recorder.stop();
+    //         recorder.exportWAV(blob => {
+    //             const url = URL.createObjectURL(blob);
+    //             const a = document.createElement("a");
+    //             a.style.display = "none";
+    //             a.href = url;
+    //             a.download = "recorded_notes.mp3";
+    //             document.body.appendChild(a);
+    //             a.click();
+    //             window.URL.revokeObjectURL(url);
+    //         });
+    //     }, (recordedNotes[recordedNotes.length - 1].time + 1) * 1000); // Adjust timing as needed
+    //     console.log("Download complete!");
+    // }
+
+    async function downloadRecordedNotes() {
+        console.log("Starting download...");
+        const offlineContext = new Tone.OfflineContext(2, recordedNotes[recordedNotes.length - 1].time + 1, 44100); // Duration based on the last note's time
+        const offlineSynth = new Tone.Sampler({
+            urls: {
+                C1: "C1.mp3", "C#1": "C1s.mp3", D1: "D1.mp3", "D#1": "D1s.mp3",
+                E1: "E1.mp3", F1: "F1.mp3", "F#1": "F1s.mp3", G1: "G1.mp3",
+                "G#1": "G1s.mp3", A1: "A1.mp3", "A#1": "A1s.mp3", B1: "B1.mp3",
+                C2: "C2.mp3", "C#2": "C2s.mp3", D2: "D2.mp3", "D#2": "D2s.mp3",
+                E2: "E2.mp3", F2: "F2.mp3", "F#2": "F2s.mp3", G2: "G2.mp3",
+                "G#2": "G2s.mp3", A2: "A2.mp3", "A#2": "A2s.mp3", B2: "B2.mp3",
+                C3: "C3.mp3", "C#3": "C3s.mp3", D3: "D3.mp3", "D#3": "D3s.mp3",
+                E3: "E3.mp3", F3: "F3.mp3", "F#3": "F3s.mp3", G3: "G3.mp3",
+                "G#3": "G3s.mp3", A3: "A3.mp3", "A#3": "A3s.mp3", B3: "B3.mp3",
+                C4: "C4.mp3", "C#4": "C4s.mp3", D4: "D4.mp3", "D#4": "D4s.mp3",
+                E4: "E4.mp3", F4: "F4.mp3", "F#4": "F4s.mp3", G4: "G4.mp3",
+                "G#4": "G4s.mp3", A4: "A4.mp3", "A#4": "A4s.mp3", B4: "B4.mp3",
+                C5: "C5.mp3",
+            },
+            release: 1,
+            baseUrl: "/sounds/",
+            onload: () => {
+                console.log("Offline sampler loaded");
+            }
+        }).toDestination();
+    
+        recordedNotes.forEach(({ note, time }) => {
+            offlineSynth.triggerAttackRelease(note, "8n", time);
+        });
+    
+        const buffer = await offlineContext.render();
+    
+        const recorder = new Recorder(buffer);
+        recorder.record();
+    
+        // Stop recording after the duration of the recorded notes
+        setTimeout(() => {
+            recorder.stop();
+            recorder.exportWAV(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.style.display = "none";
+                a.href = url;
+                a.download = "recorded_notes.mp3";
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            });
+        }, (recordedNotes[recordedNotes.length - 1].time + 1) * 1000); // Adjust timing as needed
+        console.log("Download complete!");
+    }
+
+    async function downloadCombinedNotes() {
+        const offlineContext = new Tone.OfflineContext(2, 30, 44100); // 30 seconds duration, adjust as needed
+        const offlineSynth = new Tone.Sampler({
+            urls: {
+                C1: "C1.mp3", "C#1": "C1s.mp3", D1: "D1.mp3", "D#1": "D1s.mp3",
+                E1: "E1.mp3", F1: "F1.mp3", "F#1": "F1s.mp3", G1: "G1.mp3",
+                "G#1": "G1s.mp3", A1: "A1.mp3", "A#1": "A1s.mp3", B1: "B1.mp3",
+                C2: "C2.mp3", "C#2": "C2s.mp3", D2: "D2.mp3", "D#2": "D2s.mp3",
+                E2: "E2.mp3", F2: "F2.mp3", "F#2": "F2s.mp3", G2: "G2.mp3",
+                "G#2": "G2s.mp3", A2: "A2.mp3", "A#2": "A2s.mp3", B2: "B2.mp3",
+                C3: "C3.mp3", "C#3": "C3s.mp3", D3: "D3.mp3", "D#3": "D3s.mp3",
+                E3: "E3.mp3", F3: "F3.mp3", "F#3": "F3s.mp3", G3: "G3.mp3",
+                "G#3": "G3s.mp3", A3: "A3.mp3", "A#3": "A3s.mp3", B3: "B3.mp3",
+                C4: "C4.mp3", "C#4": "C4s.mp3", D4: "D4.mp3", "D#4": "D4s.mp3",
+                E4: "E4.mp3", F4: "F4.mp3", "F#4": "F4s.mp3", G4: "G4.mp3",
+                "G#4": "G4s.mp3", A4: "A4.mp3", "A#4": "A4s.mp3", B4: "B4.mp3",
+                C5: "C5.mp3",
+            },
+            release: 1,
+            baseUrl: "/sounds/",
+        }).toDestination();
+
+        const combinedNotes = recordedNotes.concat(generatedNotes.map((note, index) => ({
+            note,
+            time: recordedNotes.length > 0 ? recordedNotes[recordedNotes.length - 1].time + (index + 1) * 0.5 : (index + 1) * 0.5
+        })));
+
+        combinedNotes.forEach(({ note, time }) => {
+            offlineSynth.triggerAttackRelease(note, "8n", time);
+        });
+
+        const buffer = await offlineContext.render();
+
+        const recorder = new Recorder(buffer);
+        recorder.record();
+
+        // Stop recording after the duration of the combined notes
+        setTimeout(() => {
+            recorder.stop();
+            recorder.exportWAV(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.style.display = "none";
+                a.href = url;
+                a.download = "combined_notes.mp3";
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            });
+        }, combinedNotes.length * 0.5 * 1000); // Adjust timing as needed
+    }
+
+    downloadButton.addEventListener("click", downloadRecordedNotes);
+
+
 });
