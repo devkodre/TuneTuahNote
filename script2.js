@@ -24,4 +24,9 @@ const synth = new Tone.Sampler({
     baseUrl: "https://tonejs.github.io/audio/salamander/",  // Make sure this is correct
 }).toDestination();
 
+document.getElementById("start-audio").addEventListener("click", async () => {
+    await Tone.start();
+    console.log("Audio started!");
+});
+
 
