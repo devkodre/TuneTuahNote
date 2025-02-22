@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 import magenta.music as mm
 from magenta.models.performance_rnn import performance_sequence_generator
 from magenta.models.shared import sequence_generator_bundle
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf # type: ignore
 
 app = Flask(__name__)
 
