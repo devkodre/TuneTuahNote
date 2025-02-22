@@ -1,0 +1,1 @@
+console.log("Script2.js is loading");
