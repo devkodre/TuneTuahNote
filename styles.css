@@ -39,12 +39,8 @@ body {
     text-align: center;
     margin: 0;
     padding: 20px;
-<<<<<<< Updated upstream
-    background-color: #f0f0f0;
-=======
     background: repeating-linear-gradient(#3a1c71, #d76d77, #ffaf7b);
     color: white;
->>>>>>> Stashed changes
 }
 
 button {
@@ -88,8 +84,6 @@ button {
     margin-right: -15px;
     z-index: 1;
 }
-<<<<<<< Updated upstream
-=======
 
 .key:active {
     background-color: #ddd;
@@ -141,4 +135,3 @@ li a:hover {
 .active {
     background-color: #04AA6D;
 }
->>>>>>> Stashed changes
