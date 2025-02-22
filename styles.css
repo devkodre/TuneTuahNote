@@ -1,40 +1,4 @@
 /* body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #222;
-    overflow: hidden;
-}
-
-.piano {
-    display: flex;
-}
-
-.key {
-    width: 50px;
-    height: 200px;
-    border: 1px solid black;
-    background: white;
-    text-align: center;
-    line-height: 200px;
-    cursor: pointer;
-    user-select: none;
-    font-weight: bold;
-}
-
-.key.black {
-    width: 30px;
-    height: 120px;
-    background: black;
-    color: white;
-    position: relative;
-    margin-left: -15px;
-    margin-right: -15px;
-    z-index: 1;
-} */
-
-body {
     font-family: Arial, sans-serif;
     text-align: center;
     margin: 0;
@@ -57,7 +21,7 @@ button {
     margin-top: 20px;
     padding: 10px;
     max-width: 90vw;
-    overflow-x: auto; /* Allows scrolling if too wide */
+    overflow-x: auto; Allows scrolling if too wide
 }
 
 .key {
@@ -82,4 +46,86 @@ button {
     margin-left: -15px;
     margin-right: -15px;
     z-index: 1;
+} */
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(to bottom, #3a1c71, #d76d77, #ffaf7b);
+    color: white;
+}
+
+button {
+    padding: 12px 20px;
+    margin: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: #6c5ce7;
+    color: white;
+    transition: 0.3s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    background-color: #4834d4;
+    transform: scale(1.05);
+}
+
+.piano-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    padding: 10px;
+}
+
+.piano {
+    display: flex;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    overflow-x: auto; /* Allows scrolling if too wide */
+    max-width: 90vw;
+}
+
+.key {
+    width: 50px;
+    height: 180px;
+    margin: 1px;
+    border: 2px solid black;
+    background-color: white;
+    display: inline-block;
+    text-align: center;
+    line-height: 180px;
+    cursor: pointer;
+    user-select: none;
+    font-weight: bold;
+    font-size: 14px;
+    transition: 0.1s ease-in-out;
+}
+
+.key.black {
+    width: 35px;
+    height: 120px;
+    background-color: black;
+    color: white;
+    position: relative;
+    margin-left: -18px;
+    margin-right: -18px;
+    z-index: 1;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.key:active {
+    background-color: #ddd;
+}
+
+.key.black:active {
+    background-color: #444;
 }
