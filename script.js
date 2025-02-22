@@ -5,9 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const recordButton = document.getElementById("record");
     const stopButton = document.getElementById("stop");
     const playbackButton = document.getElementById("playback");
+    const generateButton = document.getElementById("generate");
     
     function updateButtonStyles() {
-        [recordButton, stopButton, playbackButton].forEach(button => {
+        [recordButton, stopButton, playbackButton, generateButton].forEach(button => {
             button.classList.toggle("disabled", button.disabled);
         });
     }
@@ -15,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     recordButton.disabled = true;
     stopButton.disabled = true;
     playbackButton.disabled = true;
+    generateButton.disabled = true;
     updateButtonStyles();
 
     startAudioButton.addEventListener("click", async () => {
@@ -82,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         recordButton.disabled = true;
         stopButton.disabled = false;
         playbackButton.disabled = true;
+        generateButton.disabled = true;
         updateButtonStyles();
         console.log("Recording started...");
     });
@@ -91,11 +94,14 @@ document.addEventListener("DOMContentLoaded", () => {
         recordButton.disabled = false;
         stopButton.disabled = true;
         playbackButton.disabled = recordedNotes.length === 0;
+        generateButton.disabled = false;
         updateButtonStyles();
         console.log("Recording stopped:", recordedNotes);
+
     });
 
     playbackButton.addEventListener("click", () => {
+        generateButton.disabled = true;
         console.log("Playing back recorded notes...");
         console.log(recordedNotes);
         Tone.Transport.stop();
@@ -106,70 +112,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }, time);
         });
         Tone.Transport.start();
+        generateButton.disabled = false;
+    });
+
+    generateButton.addEventListener("click", () => {
+        console.log("Generate");
     });
 });
-
-
-//     const keys = [
-//         { note: "C", isBlack: false }, { note: "C#", isBlack: true }, { note: "D", isBlack: false }, { note: "D#", isBlack: true },
-//         { note: "E", isBlack: false }, { note: "F", isBlack: false }, { note: "F#", isBlack: true }, { note: "G", isBlack: false },
-//         { note: "G#", isBlack: true }, { note: "A", isBlack: false }, { note: "A#", isBlack: true }, { note: "B", isBlack: false }
-//     ];
-
-//     const piano = document.getElementById("piano");
-//     let recording = false;
-//     let recordedNotes = [];
-//     let startTime = 0;
-
-//     for (let octave = 1; octave <= 5; octave++) {
-//         keys.forEach(key => {
-//             const keyElement = document.createElement("div");
-//             keyElement.classList.add("key");
-//             if (key.isBlack) keyElement.classList.add("black");
-//             keyElement.dataset.note = `${key.note}${octave}`;
-//             keyElement.innerText = key.note;
-//             keyElement.addEventListener("click", () => playSound(keyElement.dataset.note));
-//             piano.appendChild(keyElement);
-//         });
-//     }
-
-//     function playSound(note) {
-//         synth.triggerAttackRelease(note, "8n");
-//         if (recording) {
-//             const time = Tone.now() - startTime;
-//             recordedNotes.push({ note, time });
-//         }
-//     }
-
-//     const recordButton = document.getElementById("record");
-//     const stopButton = document.getElementById("stop");
-//     const playbackButton = document.getElementById("playback");
-
-//     recordButton.addEventListener("click", () => {
-//         recordedNotes = [];
-//         recording = true;
-//         startTime = Tone.now();
-//         recordButton.disabled = true;
-//         stopButton.disabled = false;
-//         playbackButton.disabled = true;
-//         console.log("Recording started...");
-//     });
-
-//     stopButton.addEventListener("click", () => {
-//         recording = false;
-//         recordButton.disabled = false;
-//         stopButton.disabled = true;
-//         playbackButton.disabled = recordedNotes.length === 0 ? true : false;
-//         console.log("Recording stopped:", recordedNotes);
-//     });
-
-//     playbackButton.addEventListener("click", () => {
-//         console.log("Playing back recorded notes...");
-//         recordedNotes.forEach(({ note, time }) => {
-//             Tone.Transport.scheduleOnce(() => {
-//                 synth.triggerAttackRelease(note, "8n");
-//             }, time);
-//         });
-//         Tone.Transport.start();
-//     });
-// });
