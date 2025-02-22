@@ -48,15 +48,6 @@
 // }
 
 
-console.log("Script2.js is loading");
-
-document.getElementById("start-audio").addEventListener("click", async () => {
-    await Tone.start();
-    console.log("Audio started!");
-});
-
-
-document.addEventListener("DOMContentLoaded", () => {
 // Wait for Tone.js to be ready
 document.addEventListener("DOMContentLoaded", async () => {
     await Tone.start(); // Ensure Tone.js is started properly
@@ -120,5 +111,3 @@ function playSound(note) {
         console.error("Sound not loaded:", note);
     }
 }
-
-});
