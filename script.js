@@ -222,6 +222,67 @@ document.addEventListener("DOMContentLoaded", () => {
     //     }).toDestination();
     // }
 
+    // async function downloadRecordedNotes() {
+    //     console.log("Starting download...");
+    //     const offlineContext = new Tone.OfflineContext(2, recordedNotes[recordedNotes.length - 1].time + 1, 44100); // Duration based on the last note's time
+    //     const offlineSynth = new Tone.Sampler({
+    //         urls: {
+    //             C1: "C1.mp3", "C#1": "C1s.mp3", D1: "D1.mp3", "D#1": "D1s.mp3",
+    //             E1: "E1.mp3", F1: "F1.mp3", "F#1": "F1s.mp3", G1: "G1.mp3",
+    //             "G#1": "G1s.mp3", A1: "A1.mp3", "A#1": "A1s.mp3", B1: "B1.mp3",
+    //             C2: "C2.mp3", "C#2": "C2s.mp3", D2: "D2.mp3", "D#2": "D2s.mp3",
+    //             E2: "E2.mp3", F2: "F2.mp3", "F#2": "F2s.mp3", G2: "G2.mp3",
+    //             "G#2": "G2s.mp3", A2: "A2.mp3", "A#2": "A2s.mp3", B2: "B2.mp3",
+    //             C3: "C3.mp3", "C#3": "C3s.mp3", D3: "D3.mp3", "D#3": "D3s.mp3",
+    //             E3: "E3.mp3", F3: "F3.mp3", "F#3": "F3s.mp3", G3: "G3.mp3",
+    //             "G#3": "G3s.mp3", A3: "A3.mp3", "A#3": "A3s.mp3", B3: "B3.mp3",
+    //             C4: "C4.mp3", "C#4": "C4s.mp3", D4: "D4.mp3", "D#4": "D4s.mp3",
+    //             E4: "E4.mp3", F4: "F4.mp3", "F#4": "F4s.mp3", G4: "G4.mp3",
+    //             "G#4": "G4s.mp3", A4: "A4.mp3", "A#4": "A4s.mp3", B4: "B4.mp3",
+    //             C5: "C5.mp3",
+    //         },
+    //         release: 1,
+    //         baseUrl: "/sounds/",
+    //         onload: async () => {
+    //             console.log("Offline sampler loaded");
+    
+    //             recordedNotes.forEach(({ note, time }) => {
+    //                 offlineSynth.triggerAttackRelease(note, "8n", time);
+    //             });
+    
+    //             const renderedBuffer = await offlineContext.render();
+    
+    //             try {
+    //                 const audioContext = new AudioContext();
+    //                 await audioContext.audioWorklet.addModule('audio-worklet-processor.js');
+    //                 const recorderNode = new AudioWorkletNode(audioContext, 'recorder-processor');
+    //                 const source = audioContext.createBufferSource();
+    //                 source.buffer = renderedBuffer; // Ensure this is a valid AudioBuffer
+    //                 source.connect(recorderNode).connect(audioContext.destination);
+    //                 source.start();
+    
+    //                 recorderNode.port.onmessage = (event) => {
+    //                     if (event.data === 'complete') {
+    //                         const recordedBuffer = recorderNode.recordedBuffers;
+    //                         const blob = new Blob(recordedBuffer, { type: 'audio/wav' });
+    //                         const url = URL.createObjectURL(blob);
+    //                         const a = document.createElement("a");
+    //                         a.style.display = "none";
+    //                         a.href = url;
+    //                         a.download = "recorded_notes.mp3";
+    //                         document.body.appendChild(a);
+    //                         a.click();
+    //                         window.URL.revokeObjectURL(url);
+    //                         console.log("Download complete!");
+    //                     }
+    //                 };
+    //             } catch (error) {
+    //                 console.error("Error initializing recorder:", error);
+    //             }
+    //         }
+    //     }).toDestination();
+    // }
+
     async function downloadRecordedNotes() {
         console.log("Starting download...");
         const offlineContext = new Tone.OfflineContext(2, recordedNotes[recordedNotes.length - 1].time + 1, 44100); // Duration based on the last note's time
@@ -250,14 +311,27 @@ document.addEventListener("DOMContentLoaded", () => {
                     offlineSynth.triggerAttackRelease(note, "8n", time);
                 });
     
-                const buffer = await offlineContext.render();
+                const renderedBuffer = await offlineContext.render();
+    
+                // Debugging statements
+                console.log("Rendered buffer:", renderedBuffer);
+                console.log("Rendered buffer type:", typeof renderedBuffer);
+                console.log("Is rendered buffer an instance of AudioBuffer?", renderedBuffer instanceof AudioBuffer);
     
                 try {
                     const audioContext = new AudioContext();
                     await audioContext.audioWorklet.addModule('audio-worklet-processor.js');
                     const recorderNode = new AudioWorkletNode(audioContext, 'recorder-processor');
                     const source = audioContext.createBufferSource();
-                    source.buffer = buffer;
+    
+                    // More debugging statements
+                    console.log("Source before setting buffer:", source);
+    
+                    source.buffer = renderedBuffer; // Ensure this is a valid AudioBuffer
+    
+                    // More debugging statements
+                    console.log("Source after setting buffer:", source);
+    
                     source.connect(recorderNode).connect(audioContext.destination);
                     source.start();
     
