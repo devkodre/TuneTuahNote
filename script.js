@@ -187,35 +187,39 @@ document.addEventListener("DOMContentLoaded", () => {
     //         },
     //         release: 1,
     //         baseUrl: "/sounds/",
-    //         onload: () => {
+    //         onload: async () => {
     //             console.log("Offline sampler loaded");
+    
+    //             recordedNotes.forEach(({ note, time }) => {
+    //                 offlineSynth.triggerAttackRelease(note, "8n", time);
+    //             });
+    
+    //             const buffer = await offlineContext.render();
+    
+    //             try {
+    //                 const recorder = new Recorder(buffer);
+    //                 recorder.record();
+    
+    //                 // Stop recording after the duration of the recorded notes
+    //                 setTimeout(() => {
+    //                     recorder.stop();
+    //                     recorder.exportWAV(blob => {
+    //                         const url = URL.createObjectURL(blob);
+    //                         const a = document.createElement("a");
+    //                         a.style.display = "none";
+    //                         a.href = url;
+    //                         a.download = "recorded_notes.mp3";
+    //                         document.body.appendChild(a);
+    //                         a.click();
+    //                         window.URL.revokeObjectURL(url);
+    //                     });
+    //                 }, (recordedNotes[recordedNotes.length - 1].time + 1) * 1000); // Adjust timing as needed
+    //                 console.log("Download complete!");
+    //             } catch (error) {
+    //                 console.error("Error initializing recorder:", error);
+    //             }
     //         }
     //     }).toDestination();
-    
-    //     recordedNotes.forEach(({ note, time }) => {
-    //         offlineSynth.triggerAttackRelease(note, "8n", time);
-    //     });
-    
-    //     const buffer = await offlineContext.render();
-    
-    //     const recorder = new Recorder(buffer);
-    //     recorder.record();
-    
-    //     // Stop recording after the duration of the recorded notes
-    //     setTimeout(() => {
-    //         recorder.stop();
-    //         recorder.exportWAV(blob => {
-    //             const url = URL.createObjectURL(blob);
-    //             const a = document.createElement("a");
-    //             a.style.display = "none";
-    //             a.href = url;
-    //             a.download = "recorded_notes.mp3";
-    //             document.body.appendChild(a);
-    //             a.click();
-    //             window.URL.revokeObjectURL(url);
-    //         });
-    //     }, (recordedNotes[recordedNotes.length - 1].time + 1) * 1000); // Adjust timing as needed
-    //     console.log("Download complete!");
     // }
 
     async function downloadRecordedNotes() {
@@ -248,24 +252,33 @@ document.addEventListener("DOMContentLoaded", () => {
     
                 const buffer = await offlineContext.render();
     
-                const recorder = new Recorder(buffer);
-                recorder.record();
+                try {
+                    const audioContext = new AudioContext();
+                    await audioContext.audioWorklet.addModule('audio-worklet-processor.js');
+                    const recorderNode = new AudioWorkletNode(audioContext, 'recorder-processor');
+                    const source = audioContext.createBufferSource();
+                    source.buffer = buffer;
+                    source.connect(recorderNode).connect(audioContext.destination);
+                    source.start();
     
-                // Stop recording after the duration of the recorded notes
-                setTimeout(() => {
-                    recorder.stop();
-                    recorder.exportWAV(blob => {
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement("a");
-                        a.style.display = "none";
-                        a.href = url;
-                        a.download = "recorded_notes.mp3";
-                        document.body.appendChild(a);
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                    });
-                }, (recordedNotes[recordedNotes.length - 1].time + 1) * 1000); // Adjust timing as needed
-                console.log("Download complete!");
+                    recorderNode.port.onmessage = (event) => {
+                        if (event.data === 'complete') {
+                            const recordedBuffer = recorderNode.recordedBuffers;
+                            const blob = new Blob(recordedBuffer, { type: 'audio/wav' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement("a");
+                            a.style.display = "none";
+                            a.href = url;
+                            a.download = "recorded_notes.mp3";
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            console.log("Download complete!");
+                        }
+                    };
+                } catch (error) {
+                    console.error("Error initializing recorder:", error);
+                }
             }
         }).toDestination();
     }
