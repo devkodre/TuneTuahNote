@@ -187,6 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
     //         },
     //         release: 1,
     //         baseUrl: "/sounds/",
+    //         onload: () => {
+    //             console.log("Offline sampler loaded");
+    //         }
     //     }).toDestination();
     
     //     recordedNotes.forEach(({ note, time }) => {
@@ -236,35 +239,35 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             release: 1,
             baseUrl: "/sounds/",
-            onload: () => {
+            onload: async () => {
                 console.log("Offline sampler loaded");
+    
+                recordedNotes.forEach(({ note, time }) => {
+                    offlineSynth.triggerAttackRelease(note, "8n", time);
+                });
+    
+                const buffer = await offlineContext.render();
+    
+                const recorder = new Recorder(buffer);
+                recorder.record();
+    
+                // Stop recording after the duration of the recorded notes
+                setTimeout(() => {
+                    recorder.stop();
+                    recorder.exportWAV(blob => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.style.display = "none";
+                        a.href = url;
+                        a.download = "recorded_notes.mp3";
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    });
+                }, (recordedNotes[recordedNotes.length - 1].time + 1) * 1000); // Adjust timing as needed
+                console.log("Download complete!");
             }
         }).toDestination();
-    
-        recordedNotes.forEach(({ note, time }) => {
-            offlineSynth.triggerAttackRelease(note, "8n", time);
-        });
-    
-        const buffer = await offlineContext.render();
-    
-        const recorder = new Recorder(buffer);
-        recorder.record();
-    
-        // Stop recording after the duration of the recorded notes
-        setTimeout(() => {
-            recorder.stop();
-            recorder.exportWAV(blob => {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.style.display = "none";
-                a.href = url;
-                a.download = "recorded_notes.mp3";
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-            });
-        }, (recordedNotes[recordedNotes.length - 1].time + 1) * 1000); // Adjust timing as needed
-        console.log("Download complete!");
     }
 
     async function downloadCombinedNotes() {
